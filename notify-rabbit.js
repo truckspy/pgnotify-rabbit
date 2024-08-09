@@ -38,6 +38,7 @@ config.notify({
             // a child/ Only valid if json is true
             routingKey: v.routingKey,
             payload: v.payload,
+            typeHeader: v.typeHeader,
             // Message parsed into json?
             json: n.json,
             // Function to handle publishing
@@ -49,16 +50,27 @@ config.notify({
                         this.channel.publish(
                                 this.topic,
                                 this.key,
-                                new Buffer(this.json ? JSON.stringify(m) : m)
+                                Buffer.from(this.json ? JSON.stringify(m) : m)
                                 );
 
                     if (this.routingKey && this.json) {
+
                         this.channel.publish(
                                 this.topic,
                                 m[this.routingKey],
-                                new Buffer(JSON.stringify(
-                                        this.payload ? m[this.payload] : m
-                                        ))
+                                Buffer.from(JSON.stringify(
+                                this.payload ? m[this.payload] : m
+                                )),
+                                {
+                                    persistent: true,
+                                    noAck: false,
+                                    timestamp: Date.now(),
+                                    contentEncoding: "utf-8",
+                                    contentType: "application/json",
+                                    headers: {
+                                        xtype: m[this.typeHeader]
+                                    }
+                                }
                                 );
                     }
                 }

@@ -6,9 +6,9 @@
     "start": "node /opt/notify-rabbit.js"
   },
   "dependencies": {
-    "amqplib": "^0.5.1",
-    "bluebird": "^3.3.4",
-    "js-yaml": "^3.8.1",
-    "pg-promise": ">3.2.3"
+    "amqplib": "^0.10.4",
+    "bluebird": "^3.7.2",
+    "js-yaml": "^4.1.0",
+    "pg-promise": ">=11.9.1"
   }
 }

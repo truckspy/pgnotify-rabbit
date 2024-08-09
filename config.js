@@ -29,7 +29,7 @@ function $main(options) {
 
     // Load the config file
     try {
-        config = yaml.safeLoad(fs.readFileSync(
+        config = yaml.load(fs.readFileSync(
                 options.config ? options.config : 'config.yaml',
                 'utf8'));
     } catch (e) {
