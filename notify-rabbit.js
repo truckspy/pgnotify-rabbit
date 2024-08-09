@@ -37,9 +37,13 @@ config.notify({
     },
     // Publish the message to a rabbit topic
     rabbit: function (c, n, v) {
+        var uri = c.rabbit[v.instance];
+        if (Array.from(uri)[0] === '$') {
+            uri = process.env[uri.substring(1)];
+        }
         var o = {
             // Connection details
-            uri: c.rabbit[v.instance],
+            uri: uri,
             channel: false,
             // Topic or default to amq.topic
             topic: v.topic ? v.topic : 'amq.topic',

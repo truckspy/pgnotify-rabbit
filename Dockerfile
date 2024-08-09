@@ -1,4 +1,4 @@
-FROM area51/node:latest
+FROM node:latest
 MAINTAINER Peter Mount <peter@retep.org>
 
 ENV CMD=/opt/notify-rabbit.js
@@ -10,7 +10,7 @@ COPY package.json /opt/
 
 WORKDIR /opt
 
-CMD $CMD $PGNOTIFYOPT
+CMD $CMD
 
 RUN npm install &&\
     chmod +x $CMD

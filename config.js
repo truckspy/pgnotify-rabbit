@@ -1,7 +1,7 @@
 /*
  * config.js    Handles our new yaml style configuration
  */
-
+var DSNParser = require('dsn-parser');
 var yaml = require('js-yaml'),
         fs = require('fs'),
         pgp = require('pg-promise')(options),
@@ -41,14 +41,30 @@ function $main(options) {
                 .reduce(function (a, b) {
                     var c = config.databases[b];
                     if (c.enabled) {
-                        a[b] = pgp({
-                            host: c.host,
-                            port: c.port ? c.port : 5432,
-                            database: c.database,
-                            user: c.user,
-                            password: c.password,
-                            ssl: c.ssl ? c.ssl : false
-                        });
+                        if (c.dsn) {
+                            var url = c.dsn;
+                            if (Array.from(url)[0] === '$') {
+                                url = process.env[url.substring(1)];
+                            }
+                            var dsn = new DSNParser(url).getParts();
+                            a[b] = pgp({
+                                host: dsn.host,
+                                port: dsn.port,
+                                database: dsn.database,
+                                user: dsn.user,
+                                password: dsn.password,
+                                ssl: c.ssl ? { rejectUnauthorized: false } : false
+                            });
+                        } else {
+                            a[b] = pgp({
+                                host: c.host,
+                                port: c.port ? c.port : 5432,
+                                database: c.database,
+                                user: c.user,
+                                password: c.password,
+                                ssl: c.ssl ? { rejectUnauthorized: false } : false
+                            });
+                        }
                     }
                     return a;
                 }, {});
@@ -74,7 +90,6 @@ function notify(handlers) {
                 })
                 .reduce(function (a, n) {
                     var db = databases[n.database];
-
                     // Add any handlers
                     var actions = n.handlers ? Object.keys(handlers)
                             .filter(function (b) {

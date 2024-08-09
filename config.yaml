@@ -3,13 +3,22 @@
 databases:
     # Local test database
     test:
-        enabled: true
-        host: localhost
-        port: 5432
-        database: notify
-        user: notify
-        password: notify
-        ssl: false
+        # if the dsn starts with $ then it will be fetch from env.
+        #dsn: $PGSQL_DSN
+        #enabled: true
+
+        # or
+        #dsn: pgsql://notify:notify@127.0.0.1:5432/notify
+        #enabled: true
+
+        ## or
+        #enabled: true
+        #host: localhost
+        #port: 5432
+        #database: notify
+        #user: notify
+        #password: notify
+        #ssl: false
 
 # Notify listeners
 # These are used by the notify-rabbit.js application which connects
@@ -56,6 +65,6 @@ notify:
 rabbit:
     # Test rabbit instance with user guest, password guest on localhost.
     # You can put an IP address here, for IPv6 enclose the address with []
-    testRabbit: amqp://guest:guest@127.0.0.1
-
+    #testRabbit: amqp://guest:guest@127.0.0.1
+    testRabbit: $RABBITMQ_DSN
         
