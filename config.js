@@ -26,7 +26,6 @@ var config = {},
         databases = {};
 
 function $main(options) {
-
     // Load the config file
     try {
         config = yaml.load(fs.readFileSync(

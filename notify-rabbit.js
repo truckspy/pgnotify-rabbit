@@ -8,9 +8,21 @@
 
 console.log("notify-rabbit V0.1");
 
+const options = {};
+process.argv.forEach((val, index) => {
+
+    const opt = val.split('=');
+    if (opt.length===2) {
+        Object.assign(options, {[opt[0]]: opt[1]})
+    }
+});
+
+console.log(options);
+
 var config = require('./config')({
-    databases: true
-}),
+        ...options,
+        databases: true
+    }),
         amqp = require('amqplib');
 
 config.notify({
