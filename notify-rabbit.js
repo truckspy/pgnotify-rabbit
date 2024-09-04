@@ -7,7 +7,7 @@
  */
 
 console.log("notify-rabbit V0.1");
-
+const Redis = require("ioredis");
 const options = {};
 process.argv.forEach((val, index) => {
 
@@ -124,6 +124,58 @@ config.notify({
                     console.error(e);
                     process.exit(1);
                 });
+
+        return function (m) {
+            try {
+                o.publish(m);
+            } catch (e) {
+                console.error(e);
+            }
+        };
+    },
+    redis: function (c, n, v) {
+        var uri = c.redis[v.instance];
+        if (Array.from(uri)[0] === '$') {
+            uri = process.env[uri.substring(1)];
+        }
+        var o = {
+            // Connection details
+            uri: uri,
+            cluster: new Redis.Cluster([
+                {
+                    port: 6379,
+                    host: uri
+                }
+            ]),
+            // Routing key, send as is if defined
+            streamKey: v.streamKey,
+            streamId: v.streamId,
+            // If an object then the key holding the route and payload.
+            // For payload undefined here means the parent object rather than]
+            // a child/ Only valid if json is true
+            payload: v.payload,
+            // Message parsed into json?
+            json: n.json,
+            // Function to handle publishing
+            publish: function (m) {
+                if (this.streamKey && this.json && this.streamKey in m) {
+                    this.cluster.xadd(
+                        m[this.streamKey],
+                        this.streamId ? m[this.streamId] : "*",
+                        'payload',
+                        JSON.stringify(
+                            this.payload ? m[this.payload] : m
+                        )
+                    );
+                }
+            }
+        };
+
+        // No uri or if not json then no key then don't do anything
+        if (!o.uri || !o.streamKey)
+            return null;
+
+
 
         return function (m) {
             try {

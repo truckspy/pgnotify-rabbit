@@ -9,6 +9,7 @@
     "amqplib": "^0.10.4",
     "bluebird": "^3.7.2",
     "dsn-parser": "^1.0.3",
+    "ioredis": "^5.4.1",
     "js-yaml": "^4.1.0",
     "pg-promise": ">=11.9.1"
   }

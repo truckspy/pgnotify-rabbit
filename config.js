@@ -1,7 +1,9 @@
 /*
  * config.js    Handles our new yaml style configuration
  */
+
 var DSNParser = require('dsn-parser');
+
 var yaml = require('js-yaml'),
         fs = require('fs'),
         pgp = require('pg-promise')(options),
@@ -53,7 +55,8 @@ function $main(options) {
                                 database: dsn.database,
                                 user: dsn.user,
                                 password: dsn.password,
-                                ssl: c.ssl ? { rejectUnauthorized: false } : false
+                                ssl: c.ssl ? { rejectUnauthorized: false } : false,
+                                keepAlive: true
                             });
                         } else {
                             a[b] = pgp({
@@ -62,7 +65,8 @@ function $main(options) {
                                 database: c.database,
                                 user: c.user,
                                 password: c.password,
-                                ssl: c.ssl ? { rejectUnauthorized: false } : false
+                                ssl: c.ssl ? { rejectUnauthorized: false } : false,
+                                keepAlive: true
                             });
                         }
                     }
@@ -104,6 +108,8 @@ function notify(handlers) {
                                 return a;
                             }, [])
                             : [];
+
+
 
                     if (actions && actions.length) {
                         db.connect({direct: true})
